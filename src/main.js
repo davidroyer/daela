@@ -9,7 +9,9 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 import Vue from 'vue'
 import Quasar from 'quasar'
 import router from './router'
+import VueFire from 'vuefire'
 
+Vue.use(VueFire) // Install Quasar Framework
 Vue.use(Quasar) // Install Quasar Framework
 
 Quasar.start(() => {

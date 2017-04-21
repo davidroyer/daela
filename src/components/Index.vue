@@ -2,7 +2,7 @@
   <q-layout>
     <div slot="header" class="toolbar">
       <q-toolbar-title :padding="0">
-        Quasar Framework v{{$q.version}}
+
       </q-toolbar-title>
     </div>
 
@@ -12,76 +12,93 @@
       if using subRoutes
     -->
     <div class="layout-view">
-      <div class="logo-container non-selectable no-pointer-events">
-          <h1>Content goes here!</h1>
-      </div>
+
+        <div class="slider__wrapper">
+          <q-gallery-slider  :src="galleryPhotos"></q-gallery-slider>
+        </div>
+        <!-- <template v-for="photo in fbPhotos" >
+          <img :key="photo['.key']" class="responsive image" :src="photo['.value']" alt="">
+        </template> -->
+
     </div>
   </q-layout>
 </template>
 
 <script>
-var moveForce = 30
-var rotateForce = 40
+var firebase = require('firebase')
+var config = {
+  apiKey: 'AIzaSyCNIjlw4gVqGQgSr6pvcHqmWK4eA1KnTyk',
+  authDomain: 'vue-firebase-e123d.firebaseapp.com',
+  databaseURL: 'https://vue-firebase-e123d.firebaseio.com',
+  storageBucket: 'vue-firebase-e123d.appspot.com',
+  messagingSenderId: '121034532316'
+}
+var _ = require('lodash')
+console.log(_);
+var firebaseApp = firebase.initializeApp(config)
+const DB = firebaseApp.database()
+// const auth = firebase.auth()
+const PHOTOS = firebase.storage()
+// var usersRef = db.ref('users')
+// var postsRef = db.ref('posts')
+var photosDBRef = DB.ref('photos')
+// var photosRef = photos.ref('folder1');
+
 
 import { Utils } from 'quasar'
 
 export default {
   data () {
     return {
-      moveX: 0,
-      moveY: 0,
-      rotateY: 0,
-      rotateX: 0
     }
   },
+
+  firebase: {
+    fbPhotos: photosDBRef
+  },
+
   computed: {
-    position () {
-      let transform = `rotateX(${this.rotateX}deg) rotateY(${this.rotateY}deg)`
-      return {
-        top: this.moveY + 'px',
-        left: this.moveX + 'px',
-        '-webkit-transform': transform,
-        '-ms-transform': transform,
-        transform
-      }
+    galleryPhotos () {
+      // var users = {
+      //   'fred':    { 'user': 'fred',    'age': 40 },
+      //   'pebbles': { 'user': 'pebbles', 'age': 1 }
+      // };
+      //
+      // _.mapValues(users, function(o) { return o.age; });
+      // // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
+      //
+      // // The `_.property` iteratee shorthand.
+      // return _.mapValues(users, 'age');
+      // // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
+      return _.mapValues(this.fbPhotos, '.value')
     }
   },
   methods: {
-    move (event) {
-      const {width, height} = Utils.dom.viewport()
-      const {top, left} = Utils.event.position(event)
-      const halfH = height / 2
-      const halfW = width / 2
 
-      this.moveX = (left - halfW) / halfW * -moveForce
-      this.moveY = (top - halfH) / halfH * -moveForce
-      this.rotateY = (left / width * rotateForce * 2) - rotateForce
-      this.rotateX = -((top / height * rotateForce * 2) - rotateForce)
-    }
   },
   mounted () {
-    this.$nextTick(() => {
-      document.addEventListener('mousemove', this.move)
-      document.addEventListener('touchmove', this.move)
-    })
+
   },
   beforeDestroy () {
-    document.removeEventListener('mousemove', this.move)
-    document.removeEventListener('touchmove', this.move)
+
   }
 }
 </script>
 
 <style lang="styl">
-.logo-container
-  width 192px
-  height 268px
-  perspective 800px
-  position absolute
-  top 50%
-  left 50%
-  transform translateX(-50%) translateY(-50%)
-.logo
-  position absolute
-  transform-style preserve-3d
+.image, video {
+  object-fit: cover;
+  display: block;
+  width: 200px;
+  height: 280px !important;
+  border: 1px solid;
+}
+
+video {
+  object-fit: contain;
+}
+
+.slider__wrapper {
+  max-width: 700px;
+}
 </style>
